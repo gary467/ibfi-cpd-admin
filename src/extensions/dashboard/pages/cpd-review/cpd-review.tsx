@@ -7,13 +7,13 @@ const DashboardPage: FC = () => {
     <WixDesignSystemProvider>
       <Page>
         <Page.Header
-          title="My Page"
+          title="CPD Review"
           subtitle="This is a subtitle for your page"
         />
         <Page.Content>
           <EmptyState
-            title="My Page"
-            subtitle="Edit src/extensions/dashboard/pages/my-page/my-page.tsx to change this text."
+            title="CPD Review"
+            subtitle="Edit your page code to change this text."
             skin="page"
           />
         </Page.Content>
