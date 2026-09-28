@@ -1,25 +1,32 @@
-import type { FC } from 'react';
-import { EmptyState, Page, WixDesignSystemProvider } from '@wix/design-system';
+import { useEffect, useState, type FC } from 'react';
+import { dashboard } from '@wix/dashboard';
+import { WixDesignSystemProvider } from '@wix/design-system';
 import '@wix/design-system/styles.global.css';
+import { CpdReviewApp } from './CpdReviewApp';
 
-const DashboardPage: FC = () => {
+// PatternsReactRouter reads the page location through container.usePageLocation(),
+// which only withDashboard's `location` prop feeds. Nothing supplies it
+// automatically in a Wix CLI app.
+//
+// Skipping this is a RUNTIME-ONLY failure: tsc and wix build both pass, because
+// neither renders the page. Only opening it in the dashboard shows the throw.
+type PageLocation = Parameters<Parameters<typeof dashboard.observeState>[0]>[1]['pageLocation'];
+
+const Page: FC = () => {
+  const [location, setLocation] = useState<PageLocation | undefined>();
+
+  useEffect(() => {
+    const subscription = dashboard.observeState((_pageParams, environment) => {
+      setLocation(environment.pageLocation);
+    });
+    return () => subscription.disconnect();
+  }, []);
+
   return (
     <WixDesignSystemProvider>
-      <Page>
-        <Page.Header
-          title="CPD Review"
-          subtitle="This is a subtitle for your page"
-        />
-        <Page.Content>
-          <EmptyState
-            title="CPD Review"
-            subtitle="Edit your page code to change this text."
-            skin="page"
-          />
-        </Page.Content>
-      </Page>
+      {location ? <CpdReviewApp location={location} /> : null}
     </WixDesignSystemProvider>
   );
 };
 
-export default DashboardPage;
+export default Page;
